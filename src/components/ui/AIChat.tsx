@@ -48,6 +48,7 @@ export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
   useEffect(() => {
     const checkContext = async () => {
       try {
+        await sdk.actions.ready();
         const sdkContext = await sdk.context;
         if (sdkContext.location && sdkContext.location.type === "cast_share") {
           setIsShareContext(true);
