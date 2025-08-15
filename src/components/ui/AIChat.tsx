@@ -122,6 +122,7 @@ export default function AIChat({
         }
         // Continue gracefully even if SDK fails
       }
+      await sdk.actions.ready();
     };
 
     checkContext();
