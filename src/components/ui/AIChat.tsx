@@ -415,7 +415,7 @@ export default function AIChat({
 
   return (
     <div
-      className="h-[100dvh] bg-background flex flex-col"
+      className="h-[100dvh] bg-gradient-to-br from-background via-background to-background/95 flex flex-col relative overflow-hidden"
       style={{
         paddingTop: context?.client.safeAreaInsets?.top ?? 0,
         paddingBottom: context?.client.safeAreaInsets?.bottom ?? 0,
@@ -423,53 +423,74 @@ export default function AIChat({
         paddingRight: context?.client.safeAreaInsets?.right ?? 0,
       }}
     >
+      {/* Background gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 pointer-events-none" />
+
       {/* Header */}
-      <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
+      <div className="relative border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/40 shadow-sm">
+        <div className="flex items-center justify-between p-6">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary via-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/25">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-background shadow-sm animate-pulse"></div>
             </div>
-            <div>
-              <h1 className="font-semibold text-foreground">{title}</h1>
-              <p className="text-xs text-muted-foreground">
+            <div className="space-y-1">
+              <h1 className="text-lg font-bold text-foreground tracking-tight">
+                {title}
+              </h1>
+              <p className="text-sm text-muted-foreground font-medium">
                 {isShareContext && sharedCast
                   ? `Replying to @${
                       sharedCast.author.username || sharedCast.author.fid
                     }`
-                  : "AI Assistant"}
+                  : "Powered by AI • Always ready to help"}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {isShareContext && sharedCast && (
               <button
                 onClick={() => generateReplies()}
                 disabled={isLoading}
-                className="h-8 w-8 p-0 rounded border border-border bg-background hover:bg-accent disabled:opacity-50 flex items-center justify-center"
+                className="h-10 w-10 p-0 rounded-xl border border-border/50 bg-background/50 hover:bg-accent/50 disabled:opacity-50 flex items-center justify-center transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-95 backdrop-blur-sm"
               >
                 <RefreshCw
-                  className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+                  className={`w-4 h-4 text-muted-foreground ${
+                    isLoading ? "animate-spin" : ""
+                  }`}
                 />
               </button>
             )}
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
           </div>
         </div>
 
         {/* Cast Info */}
         {isShareContext && sharedCast && (
-          <div className="px-4 pb-4">
-            <div className="bg-muted rounded-lg p-3 border border-border">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="font-medium text-sm">
-                  @{sharedCast.author.username || sharedCast.author.fid}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  Cast {sharedCast.hash.slice(0, 8)}...
-                </span>
+          <div className="px-6 pb-6">
+            <div className="bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-sm rounded-2xl p-4 border border-border/30 shadow-sm">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+                  <span className="text-xs font-bold text-primary">
+                    {(
+                      sharedCast.author.username ||
+                      sharedCast.author.fid.toString()
+                    )
+                      .charAt(0)
+                      .toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-semibold text-sm text-card-foreground">
+                    @{sharedCast.author.username || sharedCast.author.fid}
+                  </span>
+                  <span className="text-xs text-muted-foreground ml-2 bg-muted/50 px-2 py-1 rounded-full">
+                    {sharedCast.hash.slice(0, 8)}...
+                  </span>
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground line-clamp-3">
+              <p className="text-sm text-card-foreground/80 leading-relaxed line-clamp-3 font-medium">
                 {sharedCast.text}
               </p>
             </div>
@@ -478,57 +499,71 @@ export default function AIChat({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6 relative">
         {isLoading && (
-          <div className="flex justify-center">
-            <div className="bg-muted rounded-2xl px-4 py-3 border border-border">
-              <div className="flex items-center gap-2 text-muted-foreground">
+          <div className="flex justify-center animate-fade-in">
+            <div className="bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-sm rounded-3xl px-6 py-4 border border-border/30 shadow-lg">
+              <div className="flex items-center gap-3 text-muted-foreground">
                 <div className="flex gap-1">
-                  <div className="w-2 h-2 rounded-full bg-current animate-bounce"></div>
-                  <div className="w-2 h-2 rounded-full bg-current animate-bounce [animation-delay:0.1s]"></div>
-                  <div className="w-2 h-2 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce [animation-delay:0.1s]"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce [animation-delay:0.2s]"></div>
                 </div>
-                <span className="text-sm">Generating replies...</span>
+                <span className="text-sm font-medium">
+                  Generating replies...
+                </span>
               </div>
             </div>
           </div>
         )}
 
-        {messages.map((message) => (
-          <div key={message.id}>
+        {messages.map((message, index) => (
+          <div
+            key={message.id}
+            className="animate-fade-in"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
             {message.type === "reply" ? (
               // Special rendering for reply suggestions
-              <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-medium text-card-foreground">
+              <div className="bg-gradient-to-br from-card via-card/95 to-card/90 border border-border/40 rounded-3xl p-6 space-y-4 shadow-lg shadow-primary/5 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 hover:scale-[1.01]">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-2xl bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="text-sm font-bold text-card-foreground tracking-wide">
                     Suggested Reply
                   </span>
                 </div>
-                <p className="text-card-foreground leading-relaxed">
+                <p className="text-card-foreground leading-relaxed font-medium text-base">
                   {message.content}
                 </p>
                 {message.style && (
-                  <p className="text-xs text-muted-foreground">
-                    <strong>Style:</strong> {message.style}
-                  </p>
+                  <div className="bg-muted/50 rounded-2xl p-3">
+                    <p className="text-xs text-muted-foreground">
+                      <strong className="text-primary">Style:</strong>{" "}
+                      {message.style}
+                    </p>
+                  </div>
                 )}
                 {message.personalization && (
-                  <p className="text-xs text-muted-foreground">
-                    <strong>Why this works:</strong> {message.personalization}
-                  </p>
+                  <div className="bg-primary/5 rounded-2xl p-3 border border-primary/10">
+                    <p className="text-xs text-muted-foreground">
+                      <strong className="text-primary">Why this works:</strong>{" "}
+                      {message.personalization}
+                    </p>
+                  </div>
                 )}
-                <div className="flex gap-2 pt-2">
+                <div className="flex gap-3 pt-2">
                   <Button
                     onClick={() => handleSendMessage(message.content, true)}
                     disabled={isSending}
-                    className="flex-1 py-2 text-sm"
+                    className="flex-1 py-3 text-sm font-semibold rounded-2xl bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                   >
                     {isSending ? "Sending..." : "Use This Reply"}
                   </Button>
                   <button
                     onClick={() => setInputText(message.content)}
-                    className="px-4 py-2 text-sm rounded border border-border bg-background hover:bg-accent"
+                    className="px-6 py-3 text-sm font-medium rounded-2xl border border-border/50 bg-background/50 hover:bg-accent/50 backdrop-blur-sm transition-all duration-200 hover:shadow-md hover:scale-105 active:scale-95"
                   >
                     Edit
                   </button>
@@ -539,7 +574,7 @@ export default function AIChat({
               <div
                 className={`flex ${
                   message.type === "user" ? "justify-end" : "justify-start"
-                }`}
+                } group`}
               >
                 <div
                   className={`max-w-[85%] ${
@@ -548,18 +583,18 @@ export default function AIChat({
                 >
                   <div
                     className={`
-                      rounded-2xl px-4 py-3 text-sm leading-relaxed
+                      rounded-3xl px-5 py-4 text-sm leading-relaxed font-medium shadow-lg transition-all duration-300 group-hover:shadow-xl
                       ${
                         message.type === "user"
-                          ? "bg-primary text-primary-foreground rounded-br-md shadow-lg"
-                          : "bg-muted text-muted-foreground rounded-bl-md border border-border"
+                          ? "bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground rounded-br-lg shadow-primary/20 group-hover:shadow-primary/30"
+                          : "bg-gradient-to-br from-card/90 via-card to-card/95 text-card-foreground rounded-bl-lg border border-border/30 backdrop-blur-sm group-hover:scale-[1.01]"
                       }
                     `}
                   >
                     <div className="whitespace-pre-wrap">{message.content}</div>
                   </div>
                   <div
-                    className={`text-xs text-muted-foreground mt-1 px-1 ${
+                    className={`text-xs text-muted-foreground/70 mt-2 px-2 font-medium ${
                       message.type === "user" ? "text-right" : "text-left"
                     }`}
                   >
@@ -573,29 +608,33 @@ export default function AIChat({
 
         {/* Suggestions - only show for non-share context */}
         {!isShareContext && messages.length <= 1 && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 px-1">
-              <MessageSquare className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground font-medium">
-                Quick suggestions
+          <div className="space-y-4 animate-fade-in">
+            <div className="flex items-center gap-3 px-2">
+              <div className="w-6 h-6 rounded-xl bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center">
+                <MessageSquare className="w-3 h-3 text-primary" />
+              </div>
+              <span className="text-sm text-muted-foreground font-bold tracking-wide">
+                Quick Suggestions
               </span>
             </div>
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-3">
               {suggestions.map((suggestion, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSuggestionClick(suggestion)}
                   disabled={isSending}
                   className="
-                    text-left p-3 rounded-xl border border-border bg-card hover:bg-accent
-                    transition-all duration-200 hover:shadow-md hover:scale-[1.02]
+                    text-left p-4 rounded-2xl border border-border/40 bg-gradient-to-r from-card/80 to-card/60 hover:from-accent/50 hover:to-accent/30
+                    transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:scale-[1.02] hover:border-primary/20
                     active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed
-                    text-sm text-card-foreground
+                    text-sm text-card-foreground font-medium backdrop-blur-sm
+                    group
                   "
+                  style={{ animationDelay: `${idx * 0.1}s` }}
                 >
                   <div className="flex items-center justify-between">
-                    <span>{suggestion}</span>
-                    <ArrowUp className="w-4 h-4 text-muted-foreground opacity-60" />
+                    <span className="leading-relaxed">{suggestion}</span>
+                    <ArrowUp className="w-4 h-4 text-muted-foreground/50 transition-all duration-200 group-hover:text-primary group-hover:transform group-hover:-translate-y-0.5" />
                   </div>
                 </button>
               ))}
@@ -604,16 +643,16 @@ export default function AIChat({
         )}
 
         {isSending && (
-          <div className="flex justify-start">
+          <div className="flex justify-start animate-fade-in">
             <div className="max-w-[85%]">
-              <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 border border-border">
-                <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="bg-gradient-to-br from-card/90 via-card to-card/95 rounded-3xl rounded-bl-lg px-5 py-4 border border-border/30 shadow-lg backdrop-blur-sm">
+                <div className="flex items-center gap-3 text-muted-foreground">
                   <div className="flex gap-1">
-                    <div className="w-2 h-2 rounded-full bg-current animate-bounce"></div>
-                    <div className="w-2 h-2 rounded-full bg-current animate-bounce [animation-delay:0.1s]"></div>
-                    <div className="w-2 h-2 rounded-full bg-current animate-bounce [animation-delay:0.2s]"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce [animation-delay:0.1s]"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-primary animate-bounce [animation-delay:0.2s]"></div>
                   </div>
-                  <span className="text-sm">Sending...</span>
+                  <span className="text-sm font-medium">Sending...</span>
                 </div>
               </div>
             </div>
@@ -624,10 +663,13 @@ export default function AIChat({
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4">
-        <div className="flex items-end gap-3">
+      <div className="relative border-t border-border/30 bg-gradient-to-t from-background via-background/95 to-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 p-6">
+        {/* Gradient overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/[0.02] via-transparent to-transparent pointer-events-none" />
+
+        <div className="relative flex items-end gap-4">
           <div className="flex-1 relative">
-            <div className="relative">
+            <div className="relative group">
               <Textarea
                 ref={inputRef}
                 value={inputText}
@@ -638,10 +680,11 @@ export default function AIChat({
                     : "Message AI Assistant..."
                 }
                 className="
-                  pr-12 py-3 rounded-2xl border-input bg-card text-foreground shadow-sm
-                  placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary/50
-                  resize-none min-h-[52px] max-h-32 leading-relaxed
-                  transition-all duration-200 hover:border-primary/30
+                  pr-16 py-4 px-5 rounded-3xl border-2 border-border/40 bg-gradient-to-br from-card/80 to-card/60 text-foreground shadow-lg
+                  placeholder:text-muted-foreground/70 focus:ring-4 focus:ring-primary/10 focus:border-primary/60
+                  resize-none min-h-[56px] max-h-32 leading-relaxed font-medium
+                  transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5
+                  backdrop-blur-sm group-hover:scale-[1.01] focus:scale-[1.01]
                 "
                 disabled={isSending || isLoading}
                 rows={1}
@@ -665,7 +708,7 @@ export default function AIChat({
               />
               {/* Character count indicator */}
               {inputText.length > 200 && (
-                <div className="absolute bottom-2 right-14 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
+                <div className="absolute bottom-3 right-20 text-xs text-muted-foreground/80 bg-background/90 backdrop-blur-sm px-3 py-1 rounded-full border border-border/30 shadow-sm">
                   {inputText.length}/280
                 </div>
               )}
@@ -675,38 +718,42 @@ export default function AIChat({
             onClick={() => handleSendMessage(inputText)}
             disabled={!inputText.trim() || isSending || isLoading}
             className="
-              w-12 h-12 rounded-2xl p-0 bg-primary hover:bg-primary/90 flex-shrink-0
-              disabled:opacity-50 disabled:cursor-not-allowed
-              transition-all duration-200 hover:scale-105 active:scale-95
-              shadow-lg hover:shadow-xl border border-primary/20
+              w-14 h-14 rounded-3xl p-0 bg-gradient-to-br from-primary via-primary to-primary/90 hover:from-primary/90 hover:via-primary hover:to-primary flex-shrink-0
+              disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100
+              transition-all duration-300 hover:scale-110 active:scale-95 hover:rotate-3
+              shadow-xl hover:shadow-2xl shadow-primary/20 hover:shadow-primary/30 border-2 border-primary/20
+              group relative overflow-hidden
             "
             aria-label="Send message"
           >
+            {/* Button glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+
             {isSending || isLoading ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
             ) : (
-              <Send className="w-5 h-5 text-white" />
+              <Send className="w-5 h-5 text-white transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             )}
           </Button>
         </div>
 
         {/* Helpful hint */}
-        <div className="mt-3 px-1">
+        <div className="mt-4 px-2">
           <div className="flex items-center justify-between">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground/80 font-medium">
               {isShareContext && sharedCast
-                ? "Enter custom text to get personalized reply suggestions"
-                : "Press Enter to send • Shift + Enter for new line"}
+                ? "✨ Enter custom text to get personalized reply suggestions"
+                : "💡 Press Enter to send • Shift + Enter for new line"}
             </p>
             {inputText.length > 0 && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground/80 font-medium">
                 {inputText.length > 250 ? (
                   <span
-                    className={
+                    className={`px-2 py-1 rounded-full ${
                       inputText.length > 280
-                        ? "text-destructive"
-                        : "text-amber-500"
-                    }
+                        ? "text-destructive bg-destructive/10"
+                        : "text-amber-600 bg-amber-500/10"
+                    }`}
                   >
                     {280 - inputText.length} characters remaining
                   </span>
