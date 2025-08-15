@@ -10,14 +10,14 @@
     "frame": {
       "version": "1",
       "name": "witcaster",
-      "iconUrl": "https://55ab9c4fa49c.ngrok-free.app/icon.png",
+      "iconUrl": "https://witcaster-miniapp.vercel.app/icon.png",
       "homeUrl": "http://localhost:3000",
-      "imageUrl": "https://55ab9c4fa49c.ngrok-free.app/api/opengraph-image",
+      "imageUrl": "https://witcaster-miniapp.vercel.app/api/opengraph-image",
       "buttonTitle": "help-generate",
-      "splashImageUrl": "https://55ab9c4fa49c.ngrok-free.app/splash.png",
+      "splashImageUrl": "https://witcaster-miniapp.vercel.app/splash.png",
       "splashBackgroundColor": "#f7f7f7",
       "webhookUrl": "https://api.neynar.com/f/app/372ffebf-8028-4a7d-ac46-2347990e25a3/event",
       "description": "A farcaster frame to help you compose a reply",
-      "castShareUrl": "https://55ab9c4fa49c.ngrok-free.app/share"
+      "castShareUrl": "https://witcaster-miniapp.vercel.app/share"
     }
   }
