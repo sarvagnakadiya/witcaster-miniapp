@@ -8,9 +8,10 @@ export const revalidate = 300;
 export async function generateMetadata({
   searchParams,
 }: {
-  searchParams: { castHash?: string; castFid?: string; viewerFid?: string };
+  searchParams: Promise<{ castHash?: string; castFid?: string; viewerFid?: string }>;
 }): Promise<Metadata> {
-  const { castHash, castFid } = searchParams;
+  const searchParamsData = await searchParams;
+  const { castHash, castFid } = searchParamsData;
   
   // Create a dynamic image URL if we have cast parameters
   const imageUrl = castHash && castFid 
@@ -30,12 +31,13 @@ export async function generateMetadata({
   };
 }
 
-export default function SharePage({
+export default async function SharePage({
   searchParams,
 }: {
-  searchParams: { castHash?: string; castFid?: string; viewerFid?: string };
+  searchParams: Promise<{ castHash?: string; castFid?: string; viewerFid?: string }>;
 }) {
-  const { castHash, castFid, viewerFid } = searchParams;
+  const searchParamsData = await searchParams;
+  const { castHash, castFid, viewerFid } = searchParamsData;
   
   // Build the URL with parameters to pass to the main app
   const params = new URLSearchParams();
