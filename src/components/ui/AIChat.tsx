@@ -4,7 +4,7 @@ import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import { useMiniApp } from "@neynar/react";
 import sdk from "@farcaster/miniapp-sdk";
 import { Button } from "~/components/ui/Button";
-import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
 import {
   Send,
   Sparkles,
@@ -31,9 +31,13 @@ type Message = {
 
 type AIChatProps = {
   title?: string;
+  castShareParams?: { castHash?: string; castFid?: string; viewerFid?: string };
 };
 
-export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
+export default function AIChat({
+  title = "Reply Assistant",
+  castShareParams,
+}: AIChatProps) {
   const { isSDKLoaded, context, actions } = useMiniApp();
   const [inputText, setInputText] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -42,7 +46,7 @@ export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
   const [sharedCast, setSharedCast] = useState<MiniAppCast | null>(null);
   const [isShareContext, setIsShareContext] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Check if we're in a share context and get the cast
   useEffect(() => {
@@ -56,13 +60,54 @@ export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
         console.log("📋 SDK Context:", sdkContext);
 
         if (sdkContext.location && sdkContext.location.type === "cast_share") {
-          console.log("📤 Share context detected");
+          console.log("📤 Share context detected via SDK");
           setIsShareContext(true);
           // Type assertion since we know it's cast_share type
           const castLocation = sdkContext.location as any;
           if (castLocation.cast) {
             console.log("📝 Cast data found:", castLocation.cast);
             setSharedCast(castLocation.cast);
+          }
+        } else if (castShareParams?.castHash || castShareParams?.castFid) {
+          console.log(
+            "📤 Share context detected via URL parameters:",
+            castShareParams
+          );
+          setIsShareContext(true);
+
+          // Try to fetch cast data using the URL parameters
+          if (castShareParams.castHash) {
+            try {
+              const response = await fetch(
+                `/api/share?castHash=${castShareParams.castHash}&castFid=${
+                  castShareParams.castFid || ""
+                }&viewerFid=${castShareParams.viewerFid || ""}`
+              );
+              const shareData = await response.json();
+
+              if (shareData.success && shareData.data.castData) {
+                console.log(
+                  "📝 Cast data fetched from API:",
+                  shareData.data.castData
+                );
+
+                // Convert API response to MiniAppCast format
+                const castData = shareData.data.castData;
+                if (castData.mainCast) {
+                  const mockCast: MiniAppCast = {
+                    hash: castShareParams.castHash,
+                    text: castData.mainCast,
+                    author: {
+                      fid: parseInt(castShareParams.castFid || "0"),
+                      username: "user", // This would need to be fetched separately
+                    },
+                  };
+                  setSharedCast(mockCast);
+                }
+              }
+            } catch (apiError) {
+              console.error("❌ Failed to fetch cast data from API:", apiError);
+            }
           }
         } else {
           console.log("🏠 Regular context detected");
@@ -80,7 +125,7 @@ export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
     };
 
     checkContext();
-  }, []);
+  }, [castShareParams]);
 
   // Heuristics to discover the cast hash to reply to, if available
   const parentCastHash = useMemo(() => {
@@ -581,55 +626,93 @@ export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
       <div className="border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4">
         <div className="flex items-end gap-3">
           <div className="flex-1 relative">
-            <Input
-              ref={inputRef}
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder={
-                isShareContext && sharedCast
-                  ? "Type your own reply idea..."
-                  : "Message AI Assistant..."
-              }
-              className="
-                pr-12 py-3 rounded-2xl border-border bg-background text-foreground
-                placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20
-                resize-none min-h-[44px] max-h-32
-              "
-              disabled={isSending || isLoading}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage(inputText);
+            <div className="relative">
+              <Textarea
+                ref={inputRef}
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder={
+                  isShareContext && sharedCast
+                    ? "Type your own reply idea..."
+                    : "Message AI Assistant..."
                 }
-              }}
-            />
+                className="
+                  pr-12 py-3 rounded-2xl border-input bg-card text-foreground shadow-sm
+                  placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary/50
+                  resize-none min-h-[52px] max-h-32 leading-relaxed
+                  transition-all duration-200 hover:border-primary/30
+                "
+                disabled={isSending || isLoading}
+                rows={1}
+                style={
+                  {
+                    field_sizing: "content",
+                  } as any
+                }
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = "auto";
+                  target.style.height =
+                    Math.min(target.scrollHeight, 128) + "px";
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage(inputText);
+                  }
+                }}
+              />
+              {/* Character count indicator */}
+              {inputText.length > 200 && (
+                <div className="absolute bottom-2 right-14 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
+                  {inputText.length}/280
+                </div>
+              )}
+            </div>
           </div>
           <Button
             onClick={() => handleSendMessage(inputText)}
             disabled={!inputText.trim() || isSending || isLoading}
             className="
-              w-11 h-11 rounded-full p-0 bg-primary hover:bg-primary/90
+              w-12 h-12 rounded-2xl p-0 bg-primary hover:bg-primary/90 flex-shrink-0
               disabled:opacity-50 disabled:cursor-not-allowed
               transition-all duration-200 hover:scale-105 active:scale-95
-              shadow-lg
+              shadow-lg hover:shadow-xl border border-primary/20
             "
             aria-label="Send message"
           >
             {isSending || isLoading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
             ) : (
-              <Send className="w-4 h-4 text-white" />
+              <Send className="w-5 h-5 text-white" />
             )}
           </Button>
         </div>
 
         {/* Helpful hint */}
-        <div className="mt-2 px-1">
-          <p className="text-xs text-muted-foreground">
-            {isShareContext && sharedCast
-              ? "Enter custom text to get personalized reply suggestions"
-              : "Press Enter to send • Shift + Enter for new line"}
-          </p>
+        <div className="mt-3 px-1">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground">
+              {isShareContext && sharedCast
+                ? "Enter custom text to get personalized reply suggestions"
+                : "Press Enter to send • Shift + Enter for new line"}
+            </p>
+            {inputText.length > 0 && (
+              <p className="text-xs text-muted-foreground">
+                {inputText.length > 250 ? (
+                  <span
+                    className={
+                      inputText.length > 280
+                        ? "text-destructive"
+                        : "text-amber-500"
+                    }
+                  >
+                    {280 - inputText.length} characters remaining
+                  </span>
+                ) : null}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

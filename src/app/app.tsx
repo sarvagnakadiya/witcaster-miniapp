@@ -10,7 +10,17 @@ const AIChat = dynamic(() => import("~/components/ui/AIChat"), {
 });
 
 export default function App(
-  { title }: { title?: string } = { title: APP_NAME }
+  {
+    title,
+    castShareParams,
+  }: {
+    title?: string;
+    castShareParams?: {
+      castHash?: string;
+      castFid?: string;
+      viewerFid?: string;
+    };
+  } = { title: APP_NAME }
 ) {
   console.log("🚀 App component rendering with title:", title);
 
@@ -34,7 +44,7 @@ export default function App(
         </div>
       }
     >
-      <AIChat title={title} />
+      <AIChat title={title} castShareParams={castShareParams} />
     </ErrorBoundary>
   );
 }
