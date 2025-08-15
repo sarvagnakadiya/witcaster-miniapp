@@ -1,0 +1,18 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Farcaster Mini App AI Context
+
+- This is a Next.js + TypeScript starter kit for building Farcaster mini-apps.
+- Uses QuickAuth for authentication and Neynar API for Farcaster data.
+- All protected API routes in `src/app/api/` should use `verifyAuth` for protection.
+- All authenticated client requests should use `fetchWithAuth` over simple fetch.
+- Use semantic Tailwind color classes (e.g., `bg-card`, `text-foreground`).
+- Do not use hardcoded colors unless specified by the user; use theme variables from `globals.css`.
+- Place new UI components in `src/components/ui/`.
+- Place new API routes in `src/app/api/`.
+- Use TypeScript for all new files and API responses.
+- When in doubt, refer to `AI_CONTEXT.md` for project conventions.
+- Use the provided utility functions for authentication and API calls.
