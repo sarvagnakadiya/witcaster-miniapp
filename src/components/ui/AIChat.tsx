@@ -48,18 +48,34 @@ export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
   useEffect(() => {
     const checkContext = async () => {
       try {
+        console.log("🔄 Initializing Farcaster SDK...");
         await sdk.actions.ready();
+        console.log("✅ Farcaster SDK ready");
+
         const sdkContext = await sdk.context;
+        console.log("📋 SDK Context:", sdkContext);
+
         if (sdkContext.location && sdkContext.location.type === "cast_share") {
+          console.log("📤 Share context detected");
           setIsShareContext(true);
           // Type assertion since we know it's cast_share type
           const castLocation = sdkContext.location as any;
           if (castLocation.cast) {
+            console.log("📝 Cast data found:", castLocation.cast);
             setSharedCast(castLocation.cast);
           }
+        } else {
+          console.log("🏠 Regular context detected");
         }
       } catch (error) {
-        console.error("Failed to get SDK context:", error);
+        console.error("❌ Failed to get SDK context:", error);
+        // Add more detailed error logging
+        if (error instanceof Error) {
+          console.error("Error name:", error.name);
+          console.error("Error message:", error.message);
+          console.error("Error stack:", error.stack);
+        }
+        // Continue gracefully even if SDK fails
       }
     };
 
@@ -82,31 +98,59 @@ export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
   // Function to generate replies for the shared cast
   const generateReplies = useCallback(
     async (customInput?: string) => {
-      if (!sharedCast) return;
+      if (!sharedCast) {
+        console.warn("⚠️ No shared cast available for reply generation");
+        return;
+      }
+
+      console.log("🎯 Generating replies for cast:", {
+        hash: sharedCast.hash,
+        authorFid: sharedCast.author.fid,
+        customInput: customInput || "auto-generated",
+      });
 
       setIsLoading(true);
       try {
+        const requestPayload = {
+          targetCasthash: sharedCast.hash,
+          targetFid: sharedCast.author.fid.toString(),
+          customInput,
+        };
+
+        console.log(
+          "📤 Sending request to generate-replies API:",
+          requestPayload
+        );
+
         const response = await fetchWithAuth("/api/generate-replies", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            targetCasthash: sharedCast.hash,
-            targetFid: sharedCast.author.fid.toString(),
-            customInput,
-          }),
+          body: JSON.stringify(requestPayload),
         });
 
         if (!response.ok) {
-          throw new Error("Failed to generate replies");
+          const errorText = await response.text().catch(() => "Unknown error");
+          console.error("❌ Generate replies API failed:", {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText,
+          });
+          throw new Error(
+            `Failed to generate replies: ${response.status} ${response.statusText}`
+          );
         }
 
+        console.log("✅ Generate replies API response received");
         const data: GenerateRepliesResponse | EnhancedReplyResponse =
           await response.json();
 
+        console.log("📋 Parsed response data:", data);
+
         if (customInput && "data" in data && "enhancedReply" in data.data) {
           // Handle enhanced reply response
+          console.log("🔧 Processing enhanced reply");
           const enhancedData = data as EnhancedReplyResponse;
           const replyMessage: Message = {
             id: Date.now().toString(),
@@ -116,8 +160,13 @@ export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
             personalization: enhancedData.data.personalization,
           };
           setMessages([replyMessage]);
+          console.log("✅ Enhanced reply added to messages");
         } else if (!customInput && "data" in data && "replies" in data.data) {
           // Handle multiple replies response
+          console.log(
+            "🔧 Processing multiple replies:",
+            data.data.replies.length
+          );
           const repliesData = data as GenerateRepliesResponse;
           const replyMessages: Message[] = repliesData.data.replies.map(
             (reply, index) => ({
@@ -130,19 +179,55 @@ export default function AIChat({ title = "Reply Assistant" }: AIChatProps) {
             })
           );
           setMessages(replyMessages);
+          console.log("✅ Multiple replies added to messages");
+        } else {
+          console.warn("⚠️ Unexpected response format:", data);
         }
       } catch (error) {
-        console.error("Error generating replies:", error);
+        console.error("❌ Error generating replies:", error);
+
+        // Add more detailed error logging
+        if (error instanceof Error) {
+          console.error("Error details:", {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          });
+        }
+
+        let errorContent =
+          "Sorry, I couldn't generate replies right now. Please try again.";
+
+        // Provide more specific error messages based on error type
+        if (error instanceof Error) {
+          if (error.message.includes("QuickAuth SDK not initialized")) {
+            errorContent =
+              "Authentication system is initializing. Please wait a moment and try again.";
+          } else if (error.message.includes("Cross-Origin-Opener-Policy")) {
+            errorContent =
+              "There's a browser security issue. Please refresh the page and try again.";
+          } else if (error.message.includes("404")) {
+            errorContent =
+              "API endpoint not found. Please check if the app is properly deployed.";
+          } else if (
+            error.message.includes("401") ||
+            error.message.includes("Unauthorized")
+          ) {
+            errorContent =
+              "Authentication failed. Please refresh and try again.";
+          }
+        }
+
         const errorMessage: Message = {
           id: "error",
           type: "assistant",
-          content:
-            "Sorry, I couldn't generate replies right now. Please try again.",
+          content: errorContent,
           timestamp: new Date(),
         };
         setMessages([errorMessage]);
       } finally {
         setIsLoading(false);
+        console.log("🏁 Generate replies process completed");
       }
     },
     [sharedCast]
