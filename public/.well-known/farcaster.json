@@ -1,0 +1,23 @@
+
+
+
+  {
+    "accountAssociation": {
+      "header": "eyJmaWQiOjg4NDgyMywidHlwZSI6ImF1dGgiLCJrZXkiOiIweGM5QjA2RTgxMjJmMGM1MWVCNjlFQTcxM0UyN2RBOTIyQ0E3YzQ1OEUifQ",
+      "payload": "eyJkb21haW4iOiJ3aXRjYXN0ZXItbWluaWFwcC52ZXJjZWwuYXBwIn0",
+      "signature": "ByIAhP0K6AV9zxunrZ+N2XPKfaWJm7ovaLt9+q4Fe6B+V6vpYvfSJDZrXBXOnopvIjR4aVB2v6LXxLkGenzO1Rs="
+    },
+    "frame": {
+      "version": "1",
+      "name": "witcaster",
+      "iconUrl": "https://witcaster-miniapp.vercel.app/icon.png",
+      "homeUrl": "http://localhost:3000",
+      "imageUrl": "https://witcaster-miniapp.vercel.app/api/opengraph-image",
+      "buttonTitle": "help-generate",
+      "splashImageUrl": "https://witcaster-miniapp.vercel.app/splash.png",
+      "splashBackgroundColor": "#f7f7f7",
+      "webhookUrl": "https://api.neynar.com/f/app/372ffebf-8028-4a7d-ac46-2347990e25a3/event",
+      "description": "A farcaster frame to help you compose a reply",
+      "castShareUrl": "https://witcaster-miniapp.vercel.app/share"
+    }
+  }
