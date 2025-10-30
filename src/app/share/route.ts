@@ -7,7 +7,8 @@ export async function HEAD() {
 
 // Redirect plain /share visits to home (the actual share page is /share/[fid])
 export async function GET() {
-  return NextResponse.redirect(new URL("/", process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"), 308);
+  return NextResponse.redirect(
+    new URL("/", process.env.NEXT_PUBLIC_URL || "http://localhost:3000"),
+    308
+  );
 }
-
-
