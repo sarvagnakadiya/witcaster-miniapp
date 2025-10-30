@@ -12,7 +12,7 @@ type AppProps = {
   };
 };
 
-function App({ title, castShareParams }: AppProps) {
+function App() {
   const [sharedCast, setSharedCast] = useState<{
     author: { username: string };
     hash: string;
@@ -25,9 +25,12 @@ function App({ title, castShareParams }: AppProps) {
         await sdk.actions.ready();
         const sdkContext = await (sdk as any).context;
         if (sdkContext?.location?.type === "cast_share") {
+          console.log("sdkContext", sdkContext);
           setIsShareContext(true);
           const castLocation = sdkContext.location as any;
+          console.log("castLocation", castLocation);
           if (castLocation?.cast) {
+            console.log("castLocation.cast", castLocation.cast);
             setSharedCast(castLocation.cast);
             return;
           }
@@ -37,7 +40,7 @@ function App({ title, castShareParams }: AppProps) {
       }
     };
     checkContext();
-  }, [castShareParams]);
+  }, []);
 
   if (isShareContext && sharedCast) {
     return (
@@ -48,7 +51,7 @@ function App({ title, castShareParams }: AppProps) {
     );
   }
 
-  return <div>{title || "Your regular app UI"}</div>;
+  return <div>{"Your regular app UI"}</div>;
 }
 
 export default App;

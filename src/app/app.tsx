@@ -9,17 +9,7 @@ const AppComponent = dynamic(() => import("~/components/App"), {
 });
 
 export default function App(
-  {
-    title,
-    castShareParams,
-  }: {
-    title?: string;
-    castShareParams?: {
-      castHash?: string;
-      castFid?: string;
-      viewerFid?: string;
-    };
-  } = { title: APP_NAME }
+  { title }: { title?: string } = { title: APP_NAME }
 ) {
-  return <AppComponent title={title} castShareParams={castShareParams} />;
+  return <AppComponent title={title} />;
 }
