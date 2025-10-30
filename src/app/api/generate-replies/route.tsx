@@ -219,6 +219,7 @@ Return your response in this JSON format (and only JSON, no other text):
       if (jsonMatch) {
         result = JSON.parse(jsonMatch[0]);
       } else {
+        console.log(e);
         throw new Error("Failed to parse response as JSON: " + responseText);
       }
     }
