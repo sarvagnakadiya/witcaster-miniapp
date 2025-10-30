@@ -144,5 +144,3 @@ export const UserChatBubble = ({
     </div>
   );
 };
-
-export default { SystemChatBubble, UserChatBubble };

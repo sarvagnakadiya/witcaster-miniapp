@@ -10,6 +10,10 @@ import { SystemLoadingBubble } from "./ui/ChatBubble";
 
 // ------------------ TYPES ------------------
 
+export interface AppProps {
+  title?: string;
+}
+
 interface UserInfo {
   fid: number;
   username: string;
@@ -63,7 +67,9 @@ interface GenerateRepliesSuccess {
       };
 }
 
-function App() {
+export default function App(
+  { title }: AppProps = { title: "Neynar Starter Kit" }
+) {
   const [theContext, setContext] = useState<ContextInfo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<
@@ -272,5 +278,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

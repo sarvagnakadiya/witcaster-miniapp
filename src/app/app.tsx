@@ -11,5 +11,5 @@ const AppComponent = dynamic(() => import("~/components/App"), {
 export default function App(
   { title }: { title?: string } = { title: APP_NAME }
 ) {
-  return <AppComponent />;
+  return <AppComponent title={title} />;
 }
