@@ -19,25 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    castHash?: string;
-    castFid?: string;
-    viewerFid?: string;
-  }>;
-}) {
-  // Await the searchParams promise
-  const params = await searchParams;
-
-  // Pass cast share parameters as props if they exist
-  const hasShareParams = params.castHash || params.castFid || params.viewerFid;
-
-  return (
-    <App
-      title={hasShareParams ? "Reply Assistant" : undefined}
-      castShareParams={hasShareParams ? params : undefined}
-    />
-  );
+export default function Home() {
+  return <App />;
 }
