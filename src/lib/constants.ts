@@ -1,4 +1,4 @@
-import { type AccountAssociation } from '@farcaster/miniapp-core/src/manifest';
+import { type AccountAssociation } from "@farcaster/miniapp-core/src/manifest";
 
 /**
  * Application constants and configuration values.
@@ -22,25 +22,26 @@ export const APP_URL: string = process.env.NEXT_PUBLIC_URL!;
  * The name of the mini app as displayed to users.
  * Used in titles, headers, and app store listings.
  */
-export const APP_NAME: string = 'Witcaster';
+export const APP_NAME: string = "Witcaster";
 
 /**
  * A brief description of the mini app's functionality.
  * Used in app store listings and metadata.
  */
-export const APP_DESCRIPTION: string = 'a farcaster miniapp that helps you do replies';
+export const APP_DESCRIPTION: string =
+  "a farcaster miniapp that helps you do replies";
 
 /**
  * The primary category for the mini app.
  * Used for app store categorization and discovery.
  */
-export const APP_PRIMARY_CATEGORY: string = 'social';
+export const APP_PRIMARY_CATEGORY: string = "social";
 
 /**
  * Tags associated with the mini app.
  * Used for search and discovery in app stores.
  */
-export const APP_TAGS: string[] = ['replies', 'engage', 'fun'];
+export const APP_TAGS: string[] = ["replies", "engage", "fun"];
 
 // --- Asset URLs ---
 /**
@@ -61,26 +62,33 @@ export const APP_OG_IMAGE_URL: string = `${APP_URL}/api/opengraph-image`;
  */
 export const APP_SPLASH_URL: string = `${APP_URL}/splash.png`;
 
+export const APP_SHARE_URL: string = `${APP_URL}/share`;
+
 /**
  * Background color for the splash screen.
  * Used as fallback when splash image is loading.
  */
-export const APP_SPLASH_BACKGROUND_COLOR: string = '#f7f7f7';
+export const APP_SPLASH_BACKGROUND_COLOR: string = "#f7f7f7";
 
 /**
  * Account association for the mini app.
  * Used to associate the mini app with a Farcaster account.
  * If not provided, the mini app will be unsigned and have limited capabilities.
  */
-export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined =
-  undefined;
+export const APP_ACCOUNT_ASSOCIATION: AccountAssociation | undefined = {
+  header:
+    "eyJmaWQiOjg4NDgyMywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDM2YTMxMkEzRjkxOTVCMkIwNmRiOTVmRUQxQzU2RDI4ZEY5N2MzMzQifQ",
+  payload: "eyJkb21haW4iOiJ3aXRjYXN0ZXItbWluaWFwcC52ZXJjZWwuYXBwIn0",
+  signature:
+    "MHg3Y2Q5MjY5NjY3NzJlZjM1MDI5ZDhiNWNkZGUwOGEwMjg3ODAxODNmMWNhM2JkZThjZDcxOWI3ODRlMjYwYWFjMGE4NzY4YjRlNjY5YzlmMTAzODUyZDgxMjUyYzc0ZjYxMGQxZDljMzY1ZTQ5YjdjODVmMWI2NmNkNjUxMjIxOTFi",
+};
 
 // --- UI Configuration ---
 /**
  * Text displayed on the main action button.
  * Used for the primary call-to-action in the mini app.
  */
-export const APP_BUTTON_TEXT: string = 'launch';
+export const APP_BUTTON_TEXT: string = "launch";
 
 // --- Integration Configuration ---
 /**
@@ -135,16 +143,16 @@ export const RETURN_URL: string | undefined = undefined;
 
 // PLEASE DO NOT UPDATE THIS
 export const SIGNED_KEY_REQUEST_VALIDATOR_EIP_712_DOMAIN = {
-  name: 'Farcaster SignedKeyRequestValidator',
-  version: '1',
+  name: "Farcaster SignedKeyRequestValidator",
+  version: "1",
   chainId: 10,
   verifyingContract:
-    '0x00000000fc700472606ed4fa22623acf62c60553' as `0x${string}`,
+    "0x00000000fc700472606ed4fa22623acf62c60553" as `0x${string}`,
 };
 
 // PLEASE DO NOT UPDATE THIS
 export const SIGNED_KEY_REQUEST_TYPE = [
-  { name: 'requestFid', type: 'uint256' },
-  { name: 'key', type: 'bytes' },
-  { name: 'deadline', type: 'uint256' },
+  { name: "requestFid", type: "uint256" },
+  { name: "key", type: "bytes" },
+  { name: "deadline", type: "uint256" },
 ];
