@@ -31,32 +31,6 @@ function App({ title, castShareParams }: AppProps) {
             setSharedCast(castLocation.cast);
             return;
           }
-        } else if (castShareParams?.castHash || castShareParams?.castFid) {
-          setIsShareContext(true);
-          if (castShareParams.castHash) {
-            try {
-              const response = await fetch(
-                `/api/share?castHash=${castShareParams.castHash}&castFid=${
-                  castShareParams.castFid || ""
-                }&viewerFid=${castShareParams.viewerFid || ""}`
-              );
-              const shareData = await response.json();
-              if (shareData?.success && shareData?.data?.castData) {
-                const castData = shareData.data.castData;
-                if (castData.mainCast) {
-                  setSharedCast({
-                    hash: castShareParams.castHash,
-                    author: {
-                      username: "user",
-                    },
-                  } as any);
-                  return;
-                }
-              }
-            } catch (_err) {
-              // ignore; fall through to regular UI
-            }
-          }
         }
       } catch (_e) {
         // ignore SDK init errors and fall back to default UI
