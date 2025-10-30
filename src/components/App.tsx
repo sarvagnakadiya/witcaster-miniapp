@@ -65,7 +65,6 @@ interface GenerateRepliesSuccess {
 
 function App() {
   const [theContext, setContext] = useState<ContextInfo | null>(null);
-  const [replies, setReplies] = useState<GeneratedReplyOption[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<
     { role: "system" | "user"; text: string }[]
@@ -125,20 +124,12 @@ function App() {
               "replies" in data.data &&
               Array.isArray((data.data as any).replies)
             ) {
-              setReplies((data.data as any).replies as GeneratedReplyOption[]);
               const sys = (
                 (data.data as any).replies as GeneratedReplyOption[]
               ).map((r) => ({ role: "system" as const, text: r.text }));
               setMessages(sys);
             } else if ("enhancedReply" in data.data) {
               const single = data.data as any;
-              setReplies([
-                {
-                  text: single.enhancedReply,
-                  style: "Enhanced",
-                  personalization: single.personalization ?? "",
-                },
-              ]);
               setMessages([
                 { role: "system", text: String(single.enhancedReply) },
               ]);
@@ -205,6 +196,20 @@ function App() {
     }
   };
 
+  const handlePostText = async (text: string) => {
+    try {
+      if (!theContext?.cast?.hash) return;
+      const actions = (sdk as any).actions;
+      if (actions?.composeCast) {
+        await actions.composeCast({ text, parent: theContext.cast.hash });
+      } else if (actions?.openCastComposer) {
+        await actions.openCastComposer({ text, parent: theContext.cast.hash });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   if (theContext != null) {
     return (
       <div className="min-h-[100dvh] pb-16">
@@ -221,9 +226,14 @@ function App() {
                       name={theContext.user.displayName}
                       text={m.text}
                       avatarUrl={theContext.user.pfpUrl || ""}
+                      onPost={() => handlePostText(m.text)}
                     />
                   ) : (
-                    <SystemChatBubble key={idx} text={m.text} />
+                    <SystemChatBubble
+                      key={idx}
+                      text={m.text}
+                      onPost={() => handlePostText(m.text)}
+                    />
                   )
                 )}
                 {isEnhancing && <SystemLoadingBubble text="Enhancing reply…" />}

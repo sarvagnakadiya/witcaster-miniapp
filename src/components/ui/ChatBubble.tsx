@@ -5,15 +5,22 @@ const BaseChatBubble = ({
   avatarUrl,
   name,
   className = "",
+  onPost,
+  showTapToPost = false,
 }: {
   children: React.ReactNode;
   avatarUrl?: string;
   name?: string;
   className?: string;
+  onPost?: () => void;
+  showTapToPost?: boolean;
 }) => {
   return (
     <div
-      className={`relative bg-white rounded-2xl border border-gray-200 px-4 py-3 shadow-sm ${className}`}
+      className={`relative bg-white rounded-2xl border border-gray-200 px-4 py-3 shadow-sm ${
+        onPost ? "cursor-pointer" : ""
+      } ${className}`}
+      onClick={onPost}
     >
       {(avatarUrl || name) && (
         <div className="flex items-center mb-2">
@@ -34,18 +41,31 @@ const BaseChatBubble = ({
         </div>
       )}
       {children}
+      {showTapToPost && (
+        <div className="mt-2 text-xs text-gray-400 select-none">
+          Tap to post
+        </div>
+      )}
     </div>
   );
 };
 
 // System (Witcaster) Message
-export const SystemChatBubble = ({ text }: { text: string }) => {
+export const SystemChatBubble = ({
+  text,
+  onPost,
+}: {
+  text: string;
+  onPost?: () => void;
+}) => {
   return (
     <div className="flex justify-start mb-3">
       <BaseChatBubble
         name="Witcaster"
         avatarUrl="/icon.png" // replace with your actual logo
         className="max-w-2xl"
+        onPost={onPost}
+        showTapToPost={Boolean(onPost)}
       >
         <img
           src="/star.svg"
@@ -103,14 +123,22 @@ export const UserChatBubble = ({
   name,
   text,
   avatarUrl,
+  onPost,
 }: {
   name: string;
   text: string;
   avatarUrl: string;
+  onPost?: () => void;
 }) => {
   return (
     <div className="flex justify-end mb-3">
-      <BaseChatBubble name={name} avatarUrl={avatarUrl} className="max-w-2xl">
+      <BaseChatBubble
+        name={name}
+        avatarUrl={avatarUrl}
+        className="max-w-2xl"
+        onPost={onPost}
+        showTapToPost={Boolean(onPost)}
+      >
         <p className="text-right text-gray-900 leading-relaxed">{text}</p>
       </BaseChatBubble>
     </div>
