@@ -41,11 +41,7 @@ const BaseChatBubble = ({
         </div>
       )}
       {children}
-      {showTapToPost && (
-        <div className="mt-2 text-xs text-gray-400 select-none">
-          Tap to post
-        </div>
-      )}
+      {showTapToPost && null}
     </div>
   );
 };
@@ -60,20 +56,26 @@ export const SystemChatBubble = ({
 }) => {
   return (
     <div className="flex justify-start mb-3">
-      <BaseChatBubble
-        name="Witcaster"
-        avatarUrl="/icon.png" // replace with your actual logo
-        className="max-w-2xl"
-        onPost={onPost}
-        showTapToPost={Boolean(onPost)}
-      >
-        <img
-          src="/star.svg"
-          alt="Star"
-          className="absolute top-3 right-3 w-6 h-6 text-purple-400"
-        />
-        <p className="text-gray-900 leading-relaxed mt-1">{text}</p>
-      </BaseChatBubble>
+      <div className="flex flex-col items-start">
+        {onPost && (
+          <div className="text-[9px] text-gray-400 ml-1 mb-1 select-none">
+            Tap to post
+          </div>
+        )}
+        <BaseChatBubble
+          name="Witcaster"
+          avatarUrl="/icon.png" // replace with your actual logo
+          className="max-w-2xl"
+          onPost={onPost}
+        >
+          <img
+            src="/star.svg"
+            alt="Star"
+            className="absolute top-3 right-3 w-6 h-6 text-purple-400"
+          />
+          <p className="text-gray-900 leading-relaxed mt-1 text-xm">{text}</p>
+        </BaseChatBubble>
+      </div>
     </div>
   );
 };
@@ -132,15 +134,23 @@ export const UserChatBubble = ({
 }) => {
   return (
     <div className="flex justify-end mb-3">
-      <BaseChatBubble
-        name={name}
-        avatarUrl={avatarUrl}
-        className="max-w-2xl"
-        onPost={onPost}
-        showTapToPost={Boolean(onPost)}
-      >
-        <p className="text-right text-gray-900 leading-relaxed">{text}</p>
-      </BaseChatBubble>
+      <div className="flex flex-col items-end">
+        {onPost && (
+          <div className="text-[9px] text-gray-400 mr-1 mb-1 select-none">
+            Tap to post
+          </div>
+        )}
+        <BaseChatBubble
+          name={name}
+          avatarUrl={avatarUrl}
+          className="max-w-2xl"
+          onPost={onPost}
+        >
+          <p className="text-right text-gray-900 leading-relaxed text-xm">
+            {text}
+          </p>
+        </BaseChatBubble>
+      </div>
     </div>
   );
 };

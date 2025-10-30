@@ -52,10 +52,11 @@ export default function BottomInputBar({
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-50"
+      className="fixed inset-x-0 z-50"
       style={{
-        // Keep above iOS home indicator and lift when keyboard shows
-        paddingBottom: `calc(env(safe-area-inset-bottom) + 8px + ${viewportOffset}px)`,
+        // Lift bar slightly from the very bottom and also when keyboard shows
+        bottom: `calc(env(safe-area-inset-bottom) + 12px + ${viewportOffset}px)`,
+        paddingBottom: `env(safe-area-inset-bottom)`,
       }}
     >
       <div className="max-w-lg mx-auto px-3">
