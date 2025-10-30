@@ -66,7 +66,7 @@ export default function BottomInputBar({
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
-            className="w-full bg-transparent outline-none px-5 pr-14 py-4 text-gray-800 placeholder-gray-500"
+            className="w-full bg-transparent outline-none px-2 pr-14 py-4 text-gray-800 placeholder-gray-500"
           />
           <button
             type="button"

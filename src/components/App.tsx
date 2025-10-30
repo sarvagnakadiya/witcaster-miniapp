@@ -44,19 +44,93 @@ interface ContextInfo {
   client: ClientInfo;
 }
 
+interface GeneratedReplyOption {
+  text: string;
+  style: string;
+  personalization: string;
+}
+
+interface GenerateRepliesSuccess {
+  success: true;
+  data:
+    | {
+        replies: GeneratedReplyOption[];
+      }
+    | {
+        enhancedReply: string;
+        personalization: string;
+      };
+}
+
 function App() {
   const [theContext, setContext] = useState<ContextInfo | null>(null);
+  const [replies, setReplies] = useState<GeneratedReplyOption[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [messages, setMessages] = useState<
+    { role: "system" | "user"; text: string }[]
+  >([]);
 
   useEffect(() => {
     const checkContext = async () => {
       try {
-        await sdk.actions.ready();
         const sdkContext = await (sdk as any).context;
         if (sdkContext?.location?.type === "cast_share") {
           console.log("sdkContext", sdkContext);
           const castLocation = sdkContext.location as any;
           console.log("castLocation", castLocation);
           setContext(castLocation);
+
+          try {
+            setIsLoading(true);
+            const payload = {
+              targetCasthash: castLocation.cast.hash,
+              targetFid: String(castLocation.cast.author.fid),
+              replierFid: String(castLocation.user.fid),
+              includeUserCasts: true,
+              includeConversation: true,
+            };
+
+            const res = await fetch("/api/generate-replies", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) throw new Error("Failed to generate replies");
+            const data: GenerateRepliesSuccess = await res.json();
+
+            if (
+              "replies" in data.data &&
+              Array.isArray((data.data as any).replies)
+            ) {
+              setReplies((data.data as any).replies as GeneratedReplyOption[]);
+              const sys = (
+                (data.data as any).replies as GeneratedReplyOption[]
+              ).map((r) => ({ role: "system" as const, text: r.text }));
+              setMessages(sys);
+            } else if ("enhancedReply" in data.data) {
+              const single = data.data as any;
+              setReplies([
+                {
+                  text: single.enhancedReply,
+                  style: "Enhanced",
+                  personalization: single.personalization ?? "",
+                },
+              ]);
+              setMessages([
+                { role: "system", text: String(single.enhancedReply) },
+              ]);
+            }
+          } catch (e) {
+            console.error(e);
+          } finally {
+            try {
+              await sdk.actions.ready();
+            } catch (_e) {}
+            setIsLoading(false);
+          }
         }
       } catch (_e) {
         // ignore SDK init errors and fall back to default UI
@@ -65,14 +139,67 @@ function App() {
     checkContext();
   }, []);
 
+  const handleUserSubmit = async (value: string) => {
+    if (!theContext) return;
+    // Append user's message immediately
+    setMessages((prev) => [...prev, { role: "user", text: value }]);
+
+    try {
+      const payload = {
+        targetCasthash: theContext.cast.hash,
+        targetFid: String(theContext.cast.author.fid),
+        replierFid: String(theContext.user.fid),
+        includeUserCasts: true,
+        includeConversation: true,
+        customInput: value,
+      };
+
+      const res = await fetch("/api/generate-replies", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) throw new Error("Failed to enhance reply");
+      const data: GenerateRepliesSuccess = await res.json();
+
+      if ("enhancedReply" in data.data) {
+        setMessages((prev) => [
+          ...prev,
+          { role: "system", text: (data.data as any).enhancedReply },
+        ]);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   if (theContext != null) {
     return (
-      <div className="min-h-[100dvh] pb-32 max-w-2xl mx-auto p-4">
-        {location && <CastCard location={location} />}
-        <h1>Cast from {theContext?.user.displayName}</h1>
-        <p>cast {theContext?.cast.hash}</p>
-        <p>cast author {theContext?.cast.author.displayName}</p>
-        <BottomInputBar />
+      <div className="min-h-[100dvh] pb-32">
+        <div className="max-w-2xl mx-auto p-4 overflow-y-auto">
+          <div className="flex flex-col gap-4">
+            <CastCard location={theContext} />
+            {isLoading && <p>Generating replies…</p>}
+            {!isLoading && messages.length > 0 && (
+              <div className="flex flex-col gap-4">
+                {messages.map((m, idx) =>
+                  m.role === "user" ? (
+                    <UserChatBubble
+                      key={idx}
+                      name={theContext.user.displayName}
+                      text={m.text}
+                      avatarUrl={theContext.user.pfpUrl || ""}
+                    />
+                  ) : (
+                    <SystemChatBubble key={idx} text={m.text} />
+                  )
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+        <BottomInputBar onSubmit={handleUserSubmit} />
       </div>
     );
   }
@@ -81,9 +208,6 @@ function App() {
   return (
     <div className="min-h-[100dvh] pb-32 max-w-2xl mx-auto p-4">
       <CastCard location={DEMO_LOCATION} />
-
-      <h1>Cast from @{DEMO_LOCATION.cast.author.username}</h1>
-      <p>Analyzing cast {DEMO_LOCATION.cast.hash}...</p>
 
       <div className="mt-6 flex flex-col gap-4">
         {DEMO_CHAT.map((m, idx) =>
