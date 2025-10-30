@@ -229,8 +229,8 @@ export default function App(
 
   if (theContext != null) {
     return (
-      <div className="min-h-[100dvh] pb-16">
-        <div className="max-w-2xl mx-auto p-4 overflow-y-auto">
+      <div className="min-h-[100dvh] pb-32">
+        <div className="max-w-2xl mx-auto p-4">
           <div className="flex flex-col gap-1">
             <CastCard location={theContext} />
             {isLoading && <SystemLoadingBubble text="Generating replies…" />}
@@ -258,6 +258,8 @@ export default function App(
             )}
           </div>
         </div>
+        {/* Spacer to ensure content never hides behind the fixed input bar */}
+        <div className="h-24" />
         <BottomInputBar onSubmit={handleUserSubmit} />
       </div>
     );
@@ -265,7 +267,7 @@ export default function App(
 
   // Demo mode for local testing
   return (
-    <div className="min-h-[100dvh] pb-32 max-w-2xl mx-auto p-4">
+    <div className="min-h-[100dvh] pb-36 max-w-2xl mx-auto p-4">
       <CastCard location={DEMO_LOCATION} />
 
       <div className="mt-2 flex flex-col gap-1">
@@ -287,6 +289,8 @@ export default function App(
           )
         )}
       </div>
+      {/* Spacer to ensure content never hides behind the fixed input bar */}
+      <div className="h-24" />
       <BottomInputBar />
     </div>
   );

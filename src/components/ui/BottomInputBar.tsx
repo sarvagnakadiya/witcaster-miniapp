@@ -55,7 +55,7 @@ export default function BottomInputBar({
       className="fixed inset-x-0 z-50"
       style={{
         // Lift bar slightly from the very bottom and also when keyboard shows
-        bottom: `calc(env(safe-area-inset-bottom) + 12px + ${viewportOffset}px)`,
+        bottom: `calc(env(safe-area-inset-bottom) + 20px + ${viewportOffset}px)`,
         paddingBottom: `env(safe-area-inset-bottom)`,
       }}
     >
