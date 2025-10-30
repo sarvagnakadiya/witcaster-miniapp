@@ -4,6 +4,11 @@ import { useMiniApp } from "@neynar/react";
 
 type AppProps = {
   title?: string;
+  castShareParams?: {
+    castHash?: string;
+    castFid?: string;
+    viewerFid?: string;
+  };
 };
 
 type ShareLocation = {
