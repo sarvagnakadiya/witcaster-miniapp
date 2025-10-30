@@ -78,14 +78,30 @@ function App() {
           console.log("sdkContext", sdkContext);
           const castLocation = sdkContext.location as any;
           console.log("castLocation", castLocation);
-          setContext(castLocation);
+          // Normalize context: user/client live on root context, cast under location
+          const normalized: ContextInfo = {
+            user: sdkContext.user,
+            client: sdkContext.client,
+            cast: castLocation.cast,
+          } as ContextInfo;
+          setContext(normalized);
 
           try {
             setIsLoading(true);
+            if (
+              !normalized?.cast?.hash ||
+              !normalized?.cast?.author?.fid ||
+              !normalized?.user?.fid
+            ) {
+              throw new Error(
+                "Missing required context fields for reply generation"
+              );
+            }
+
             const payload = {
-              targetCasthash: castLocation.cast.hash,
-              targetFid: String(castLocation.cast.author.fid),
-              replierFid: String(castLocation.user.fid),
+              targetCasthash: normalized.cast.hash,
+              targetFid: String(normalized.cast.author.fid),
+              replierFid: String(normalized.user.fid),
               includeUserCasts: true,
               includeConversation: true,
             };
@@ -145,6 +161,14 @@ function App() {
     setMessages((prev) => [...prev, { role: "user", text: value }]);
 
     try {
+      if (
+        !theContext?.cast?.hash ||
+        !theContext?.cast?.author?.fid ||
+        !theContext?.user?.fid
+      ) {
+        throw new Error("Missing required context fields for enhancing reply");
+      }
+
       const payload = {
         targetCasthash: theContext.cast.hash,
         targetFid: String(theContext.cast.author.fid),
