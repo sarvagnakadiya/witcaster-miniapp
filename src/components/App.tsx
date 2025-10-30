@@ -1,6 +1,7 @@
 "use client";
 
-import { useMiniApp } from "@neynar/react";
+import { useEffect, useState } from "react";
+import sdk from "@farcaster/miniapp-sdk";
 
 type AppProps = {
   title?: string;
@@ -11,21 +12,60 @@ type AppProps = {
   };
 };
 
-type ShareLocation = {
-  type: "cast_share";
-  cast: {
+function App({ title, castShareParams }: AppProps) {
+  const [sharedCast, setSharedCast] = useState<{
     author: { username: string };
     hash: string;
-  };
-};
+  } | null>(null);
+  const [isShareContext, setIsShareContext] = useState(false);
 
-function App({ title }: AppProps) {
-  const { context } = useMiniApp();
+  useEffect(() => {
+    const checkContext = async () => {
+      try {
+        await sdk.actions.ready();
+        const sdkContext = await (sdk as any).context;
+        if (sdkContext?.location?.type === "cast_share") {
+          setIsShareContext(true);
+          const castLocation = sdkContext.location as any;
+          if (castLocation?.cast) {
+            setSharedCast(castLocation.cast);
+            return;
+          }
+        } else if (castShareParams?.castHash || castShareParams?.castFid) {
+          setIsShareContext(true);
+          if (castShareParams.castHash) {
+            try {
+              const response = await fetch(
+                `/api/share?castHash=${castShareParams.castHash}&castFid=${
+                  castShareParams.castFid || ""
+                }&viewerFid=${castShareParams.viewerFid || ""}`
+              );
+              const shareData = await response.json();
+              if (shareData?.success && shareData?.data?.castData) {
+                const castData = shareData.data.castData;
+                if (castData.mainCast) {
+                  setSharedCast({
+                    hash: castShareParams.castHash,
+                    author: {
+                      username: "user",
+                    },
+                  } as any);
+                  return;
+                }
+              }
+            } catch (_err) {
+              // ignore; fall through to regular UI
+            }
+          }
+        }
+      } catch (_e) {
+        // ignore SDK init errors and fall back to default UI
+      }
+    };
+    checkContext();
+  }, [castShareParams]);
 
-  const location = context?.location as ShareLocation | undefined;
-  const sharedCast = location?.type === "cast_share" ? location.cast : null;
-
-  if (sharedCast) {
+  if (isShareContext && sharedCast) {
     return (
       <div>
         <h1>Cast from @{sharedCast.author.username}</h1>
