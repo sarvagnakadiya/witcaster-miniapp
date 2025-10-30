@@ -58,7 +58,7 @@ export default function BottomInputBar({
         paddingBottom: `calc(env(safe-area-inset-bottom) + 8px + ${viewportOffset}px)`,
       }}
     >
-      <div className="max-w-2xl mx-auto px-3">
+      <div className="max-w-lg mx-auto px-3">
         <div className="relative rounded-full bg-gray-100 border border-gray-200 shadow-sm">
           <input
             ref={inputRef}
@@ -66,18 +66,18 @@ export default function BottomInputBar({
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
-            className="w-full bg-transparent outline-none px-2 pr-14 py-4 text-gray-800 placeholder-gray-500"
+            className="w-full bg-transparent outline-none px-4 pr-12 py-2 text-gray-800 placeholder-gray-500 text-[16px]"
           />
           <button
             type="button"
             aria-label="Send"
             onClick={submit}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black text-white flex items-center justify-center active:scale-95"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black text-white flex items-center justify-center active:scale-95"
           >
             {/* Up arrow */}
             <svg
-              width="18"
-              height="18"
+              width="16"
+              height="16"
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"

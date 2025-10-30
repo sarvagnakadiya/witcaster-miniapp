@@ -6,6 +6,7 @@ import CastCard from "./ui/CastCard";
 import BottomInputBar from "./ui/BottomInputBar";
 import { DEMO_LOCATION, DEMO_CHAT } from "./DummyData.js";
 import { SystemChatBubble, UserChatBubble } from "./ui/ChatBubble";
+import { SystemLoadingBubble } from "./ui/ChatBubble";
 
 // ------------------ TYPES ------------------
 
@@ -69,6 +70,7 @@ function App() {
   const [messages, setMessages] = useState<
     { role: "system" | "user"; text: string }[]
   >([]);
+  const [isEnhancing, setIsEnhancing] = useState<boolean>(false);
 
   useEffect(() => {
     const checkContext = async () => {
@@ -105,6 +107,8 @@ function App() {
               includeUserCasts: true,
               includeConversation: true,
             };
+
+            console.log("payload", payload);
 
             const res = await fetch("/api/generate-replies", {
               method: "POST",
@@ -161,6 +165,7 @@ function App() {
     setMessages((prev) => [...prev, { role: "user", text: value }]);
 
     try {
+      setIsEnhancing(true);
       if (
         !theContext?.cast?.hash ||
         !theContext?.cast?.author?.fid ||
@@ -195,18 +200,20 @@ function App() {
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      setIsEnhancing(false);
     }
   };
 
   if (theContext != null) {
     return (
-      <div className="min-h-[100dvh] pb-32">
+      <div className="min-h-[100dvh] pb-16">
         <div className="max-w-2xl mx-auto p-4 overflow-y-auto">
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-0.5">
             <CastCard location={theContext} />
-            {isLoading && <p>Generating replies…</p>}
+            {isLoading && <SystemLoadingBubble text="Generating replies…" />}
             {!isLoading && messages.length > 0 && (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-0.5">
                 {messages.map((m, idx) =>
                   m.role === "user" ? (
                     <UserChatBubble
@@ -219,6 +226,7 @@ function App() {
                     <SystemChatBubble key={idx} text={m.text} />
                   )
                 )}
+                {isEnhancing && <SystemLoadingBubble text="Enhancing reply…" />}
               </div>
             )}
           </div>
@@ -233,7 +241,7 @@ function App() {
     <div className="min-h-[100dvh] pb-32 max-w-2xl mx-auto p-4">
       <CastCard location={DEMO_LOCATION} />
 
-      <div className="mt-6 flex flex-col gap-4">
+      <div className="mt-2 flex flex-col gap-0.5">
         {DEMO_CHAT.map((m, idx) =>
           m.role === "user" ? (
             <UserChatBubble
@@ -243,7 +251,10 @@ function App() {
               avatarUrl={m.avatarUrl || ""}
             />
           ) : (
-            <SystemChatBubble key={idx} text={m.text} />
+            <>
+              <SystemChatBubble key={idx} text={m.text} />
+              <SystemLoadingBubble key={idx} text="Generating replies…" />
+            </>
           )
         )}
       </div>

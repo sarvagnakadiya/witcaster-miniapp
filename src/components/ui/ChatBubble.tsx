@@ -58,6 +58,46 @@ export const SystemChatBubble = ({ text }: { text: string }) => {
   );
 };
 
+// System Loading (Creating reply…)
+export const SystemLoadingBubble = ({ text }: { text: string }) => {
+  return (
+    <div className="flex justify-start mb-3">
+      <BaseChatBubble
+        name="Witcaster"
+        avatarUrl="/icon.png"
+        className="max-w-2xl"
+      >
+        <p className="leading-relaxed mt-1">
+          <span
+            className="relative inline-block bg-clip-text text-transparent"
+            style={{
+              backgroundImage:
+                "linear-gradient(90deg, #8A63D2 0%, #9e9e9e 50%, #8A63D2 100%)",
+              backgroundSize: "200% 100%",
+              animation: "wit-shimmer 1.6s ease-in-out infinite",
+            }}
+          >
+            {text}
+          </span>
+          <style jsx>{`
+            @keyframes wit-shimmer {
+              0% {
+                background-position: 200% 0;
+              }
+              50% {
+                background-position: 100% 0;
+              }
+              100% {
+                background-position: 0% 0;
+              }
+            }
+          `}</style>
+        </p>
+      </BaseChatBubble>
+    </div>
+  );
+};
+
 // User Message
 export const UserChatBubble = ({
   name,
