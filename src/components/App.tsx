@@ -3,15 +3,6 @@
 import { useEffect, useState } from "react";
 import sdk from "@farcaster/miniapp-sdk";
 
-type AppProps = {
-  title?: string;
-  castShareParams?: {
-    castHash?: string;
-    castFid?: string;
-    viewerFid?: string;
-  };
-};
-
 function App() {
   const [sharedCast, setSharedCast] = useState<{
     author: { username: string };
