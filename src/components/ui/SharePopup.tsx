@@ -33,7 +33,7 @@ export function SharePopup({ isOpen, onClose }: SharePopupProps) {
         </div>
         
         <p className="text-gray-600 mb-6">
-          Share Witcaster on your feed to let others know you're using it to be more 
+          Share Witcaster on your feed to let others know you&apos;re using it to be more 
           active on Farcaster and creating cool replies!
         </p>
 

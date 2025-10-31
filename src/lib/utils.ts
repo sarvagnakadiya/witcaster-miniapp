@@ -49,7 +49,7 @@ export async function getFarcasterDomainManifest(): Promise<any> {
     accountAssociation: APP_ACCOUNT_ASSOCIATION!,
     miniapp: {
       version: "1",
-      name: APP_NAME ?? "Neynar Starter Kit",
+      name: APP_NAME ?? "Witcaster",
       homeUrl: APP_URL,
       iconUrl: APP_ICON_URL,
       imageUrl: APP_OG_IMAGE_URL,

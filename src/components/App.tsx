@@ -70,7 +70,7 @@ interface GenerateRepliesSuccess {
 }
 
 export default function App(
-  { title }: AppProps = { title: "Neynar Starter Kit" }
+  { title: _title }: AppProps = { title: "Witcaster" }
 ) {
   const { added } = useMiniApp();
   const [theContext, setContext] = useState<ContextInfo | null>(null);

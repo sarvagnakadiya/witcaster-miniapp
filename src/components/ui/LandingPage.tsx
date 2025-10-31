@@ -6,7 +6,7 @@ import { ShareButton } from "./Share";
 import { APP_URL } from "~/lib/constants";
 
 export function LandingPage() {
-  const { actions, added, context } = useMiniApp();
+  const { actions, added, context: _context } = useMiniApp();
 
   return (
     <div className="min-h-[100dvh] flex items-center justify-center px-6 py-12">
