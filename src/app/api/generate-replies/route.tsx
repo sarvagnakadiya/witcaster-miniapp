@@ -131,7 +131,7 @@ The user has drafted the following reply:
 Enhance this reply while:
 1. Maintaining the user's original message and intent
 2. Adding subtle contextual elements that would resonate with the recipient
-3. Keeping a natural, human tone
+3. Keeping a natural, human tone, witty
 4. Making it more engaging (but not dramatically different)
 5. keep the replies short and concise (mostly 1 liner)
 6. take recent events posted on cast into account to generate the reply
@@ -151,9 +151,10 @@ Generate 3 different reply options that:
 2. Will likely resonate with the recipient based on their interests and persona
 3. Are contextually appropriate to the conversation
 4. Vary in approach (e.g., one humorous, one thoughtful, one concise)
-5. Feel authentic and not AI-generated
+5. Feel authentic and not AI-generated, but be witty and playful
 6. keep the replies short and concise (less than 1 line)
 7. Treat profile bios as optional background context; avoid referencing or relying on them unless they provide clear, relevant signal. Prefer the conversation content and recent casts.
+8. could go similar replies to other casts, but unique to bouth uers.
 
 First, briefly analyze both users to understand:
 - The target user's interests, common topics, and communication style
