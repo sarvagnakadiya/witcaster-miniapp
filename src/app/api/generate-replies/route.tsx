@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { fetchConversationCasts } from "~/lib/farcaster/fetchConversation";
 import { fetchUserCasts } from "~/lib/farcaster/fetchCasts";
+import connectDB from "~/lib/db";
+import Reply from "~/lib/models/Reply";
 
 interface GenerateRepliesRequest {
   targetCasthash?: string;
@@ -223,6 +225,73 @@ Return your response in this JSON format (and only JSON, no other text):
         console.log(e);
         throw new Error("Failed to parse response as JSON: " + responseText);
       }
+    }
+
+    // Store replies in MongoDB
+    try {
+      // Ensure we have required fields for storing
+      if (targetCasthash && replierFid && targetFid) {
+        await connectDB();
+
+        // Convert result to reply options array
+        const replyOptions: Array<{
+          text: string;
+          style?: string;
+          personalization?: string;
+        }> = [];
+
+        if ("replies" in result && Array.isArray(result.replies)) {
+          // Regular replies (3 options)
+          replyOptions.push(
+            ...result.replies.map((r: any) => ({
+              text: r.text,
+              style: r.style,
+              personalization: r.personalization,
+            }))
+          );
+        } else if ("enhancedReply" in result) {
+          // Enhanced reply (single)
+          replyOptions.push({
+            text: result.enhancedReply,
+            personalization: result.personalization,
+          });
+        }
+
+        if (replyOptions.length > 0) {
+          // Find existing reply document or create new one
+          const existingReply = await Reply.findOne({
+            replierFid: replierFid,
+            targetFid: targetFid,
+            targetHash: targetCasthash,
+          });
+
+          if (existingReply) {
+            // Append new replies to existing ones (avoid duplicates based on text)
+            const existingTexts = new Set(
+              existingReply.replies.map((r) => r.text)
+            );
+            const newReplies = replyOptions.filter(
+              (r) => !existingTexts.has(r.text)
+            );
+
+            if (newReplies.length > 0) {
+              existingReply.replies.push(...newReplies);
+              await existingReply.save();
+            }
+          } else {
+            // Create new reply document
+            await Reply.create({
+              replierFid: replierFid,
+              targetFid: targetFid,
+              targetHash: targetCasthash,
+              replies: replyOptions,
+            });
+          }
+        }
+      }
+    } catch (dbError) {
+      // Log error but don't fail the request
+      console.error("Error storing replies in MongoDB:", dbError);
     }
 
     return NextResponse.json({

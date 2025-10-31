@@ -1,10 +1,9 @@
-import { NextRequest } from "next/server";
 import { readFile } from "fs/promises";
 import { join } from "path";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Read the static og-image.png file from the public folder
     const imagePath = join(process.cwd(), "public", "og-image.png");

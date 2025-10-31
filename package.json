@@ -61,6 +61,7 @@
     "dotenv": "^16.4.7",
     "lucide-react": "^0.469.0",
     "mipd": "^0.0.7",
+    "mongoose": "^8.19.2",
     "next": "^15",
     "react": "^19",
     "react-dom": "^19",

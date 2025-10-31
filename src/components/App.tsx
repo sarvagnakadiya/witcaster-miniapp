@@ -206,7 +206,12 @@ export default function App(
 
   const handlePostText = async (text: string) => {
     try {
-      if (!theContext?.cast?.hash) return;
+      if (
+        !theContext?.cast?.hash ||
+        !theContext?.cast?.author?.fid ||
+        !theContext?.user?.fid
+      )
+        return;
       const actions = (sdk as any).actions;
       if (actions?.composeCast) {
         console.log("composeCast", {
@@ -223,6 +228,26 @@ export default function App(
             hash: theContext.cast.hash.toString(),
           },
         });
+
+        // Track that this reply was posted
+        try {
+          await fetch("/api/replies/post", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              replierFid: String(theContext.user.fid),
+              targetFid: String(theContext.cast.author.fid),
+              targetHash: theContext.cast.hash,
+              replyText: text,
+            }),
+          });
+        } catch (trackError) {
+          // Log error but don't fail the post operation
+          console.error("Error tracking reply post:", trackError);
+        }
+
         // Show share popup after successful post
         setShowSharePopup(true);
       }
