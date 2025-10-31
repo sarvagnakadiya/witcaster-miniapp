@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import sdk from "@farcaster/miniapp-sdk";
-import { useMiniApp } from "@neynar/react";
 import CastCard from "./ui/CastCard";
 import BottomInputBar from "./ui/BottomInputBar";
 import { SystemChatBubble, UserChatBubble } from "./ui/ChatBubble";
@@ -72,7 +71,6 @@ interface GenerateRepliesSuccess {
 export default function App(
   { title: _title }: AppProps = { title: "Witcaster" }
 ) {
-  const { added } = useMiniApp();
   const [theContext, setContext] = useState<ContextInfo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<
@@ -233,14 +231,13 @@ export default function App(
     }
   };
 
-  // Show landing page if mini app is not added (when context exists, check client.added)
-  // or if there's no context at all
-  const isMiniAppAdded = added ?? theContext?.client?.added ?? false;
-  if (!isMiniAppAdded || theContext == null) {
+  // If we have context from cast_share, show main app (don't check added status)
+  // Landing page is only shown when there's no context (replaces demo data)
+  if (theContext == null) {
     return <LandingPage />;
   }
 
-  // Main app view when context is available and mini app is added
+  // Main app view when context is available (cast_share)
   return (
     <>
       <div className="min-h-[100dvh] pb-32">
