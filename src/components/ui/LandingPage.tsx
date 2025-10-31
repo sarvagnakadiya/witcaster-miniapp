@@ -12,8 +12,10 @@ export function LandingPage() {
     <div className="min-h-[100dvh] flex items-center justify-center px-6 py-12">
       <div className="max-w-lg w-full flex flex-col items-center gap-8">
         {/* Description Section */}
-        <div className="text-center space-y-4">
-          <img src="/demo.GIF" alt="Witcaster demo" className="w-16 h-16" />
+        <div className="text-center space-y-4 flex flex-col items-center">
+          <div className="flex justify-center">
+            <img src="/demo.GIF" alt="Witcaster demo" className="w-48 h-48 mx-auto" />
+          </div>
           <h1 className="text-3xl font-bold text-gray-900">Witcaster</h1>
           <p className="text-lg text-gray-600 leading-relaxed">
             Be more active on Farcaster and create cool replies. Witcaster helps
