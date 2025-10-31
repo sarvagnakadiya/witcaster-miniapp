@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import sdk from "@farcaster/miniapp-sdk";
+import { useMiniApp } from "@neynar/react";
 import CastCard from "./ui/CastCard";
 import BottomInputBar from "./ui/BottomInputBar";
-import { DEMO_LOCATION, DEMO_CHAT } from "./DummyData.js";
 import { SystemChatBubble, UserChatBubble } from "./ui/ChatBubble";
 import { SystemLoadingBubble } from "./ui/ChatBubble";
+import { LandingPage } from "./ui/LandingPage";
+import { SharePopup } from "./ui/SharePopup";
 
 // ------------------ TYPES ------------------
 
@@ -70,12 +72,14 @@ interface GenerateRepliesSuccess {
 export default function App(
   { title }: AppProps = { title: "Neynar Starter Kit" }
 ) {
+  const { added } = useMiniApp();
   const [theContext, setContext] = useState<ContextInfo | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [messages, setMessages] = useState<
     { role: "system" | "user"; text: string }[]
   >([]);
   const [isEnhancing, setIsEnhancing] = useState<boolean>(false);
+  const [showSharePopup, setShowSharePopup] = useState<boolean>(false);
 
   useEffect(() => {
     const checkContext = async () => {
@@ -221,14 +225,24 @@ export default function App(
             hash: theContext.cast.hash.toString(),
           },
         });
+        // Show share popup after successful post
+        setShowSharePopup(true);
       }
     } catch (e) {
       console.error(e);
     }
   };
 
-  if (theContext != null) {
-    return (
+  // Show landing page if mini app is not added (when context exists, check client.added)
+  // or if there's no context at all
+  const isMiniAppAdded = added ?? theContext?.client?.added ?? false;
+  if (!isMiniAppAdded || theContext == null) {
+    return <LandingPage />;
+  }
+
+  // Main app view when context is available and mini app is added
+  return (
+    <>
       <div className="min-h-[100dvh] pb-32">
         <div className="max-w-2xl mx-auto p-4">
           <div className="flex flex-col gap-1">
@@ -262,36 +276,10 @@ export default function App(
         <div className="h-24" />
         <BottomInputBar onSubmit={handleUserSubmit} />
       </div>
-    );
-  }
-
-  // Demo mode for local testing
-  return (
-    <div className="min-h-[100dvh] pb-36 max-w-2xl mx-auto p-4">
-      <CastCard location={DEMO_LOCATION} />
-
-      <div className="mt-2 flex flex-col gap-1">
-        <SystemChatBubble text="Generating replies…" />
-
-        {DEMO_CHAT.map((m, idx) =>
-          m.role === "user" ? (
-            <UserChatBubble
-              key={idx}
-              name={m.name}
-              text={m.text}
-              avatarUrl={m.avatarUrl || ""}
-            />
-          ) : (
-            <>
-              <SystemChatBubble key={idx} text={m.text} />
-              <SystemLoadingBubble key={idx} text="Generating replies…" />
-            </>
-          )
-        )}
-      </div>
-      {/* Spacer to ensure content never hides behind the fixed input bar */}
-      <div className="h-24" />
-      <BottomInputBar />
-    </div>
+      <SharePopup
+        isOpen={showSharePopup}
+        onClose={() => setShowSharePopup(false)}
+      />
+    </>
   );
 }
