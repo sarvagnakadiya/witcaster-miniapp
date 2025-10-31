@@ -52,7 +52,6 @@ interface ContextInfo {
 
 interface GeneratedReplyOption {
   text: string;
-  style: string;
   personalization: string;
 }
 

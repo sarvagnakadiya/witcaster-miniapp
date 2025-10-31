@@ -2,7 +2,6 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IReplyOption {
   text: string;
-  style?: string;
   personalization?: string;
   posted?: boolean;
   postedAt?: Date;
@@ -20,7 +19,6 @@ export interface IReply extends Document {
 const ReplyOptionSchema = new Schema<IReplyOption>(
   {
     text: { type: String, required: true },
-    style: { type: String },
     personalization: { type: String },
     posted: { type: Boolean, default: false },
     postedAt: { type: Date },

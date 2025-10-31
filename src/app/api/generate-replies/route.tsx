@@ -97,7 +97,7 @@ export async function POST(request: Request) {
       : { castsText: [], authorBio: "" };
 
     // Build the prompt
-    let prompt = `You are helping craft contextual, personalized replies for a Farcaster conversation.
+    const prompt = `You are crafting engaging, natural, and personalized replies for a Farcaster conversation. The goal is to help the user sound like themselves — witty, relatable, and context-aware — while fitting naturally into the ongoing conversation.
 
 ### Original Cast Being Replied To:
 "${originalCast.text}"
@@ -123,68 +123,68 @@ Profile Bio: "${formattedCurrentUserCasts.authorBio}"
 Recent Casts by Current User:
 ${formattedCurrentUserCasts.castsText.slice(0, 10).join("\n\n")}
 
-### Instructions:`;
+### Core Behavioral Rules:
+1. Prioritize the *conversation context* and tone of recent comments over anything else.
+2. Use previous casts only to understand writing style, humor level, and personality — **not** to directly reference past topics unless they’re genuinely relevant.
+3. Avoid overconnecting unrelated things (e.g., referencing coding when the cast is about someone’s new phone).
+4. Use natural, Gen Z / Crypto Twitter phrasing. Think playful, casual, confident, sometimes ironic — not try-hard or overly formal.
+5. Keep replies short, usually less than one-liners. Engaging and scroll-stopping, not essay-length.
+6. When unsure, default to a fun, friendly, or witty tone rather than over-contextualizing.
+7. Use crypto-native expressions, slang, and tone common on Farcaster or Crypto Twitter when appropriate (e.g., “vibes,” “based,” “ngl,” “alpha,” “mid,” “drip,” “fired up,” etc.).
 
-    if (customInput) {
-      prompt += `
-The user has drafted the following reply:
+---
+
+${
+  customInput
+    ? `The user has drafted the following reply:
 "${customInput}"
 
-Enhance this reply while:
-1. Maintaining the user's original message and intent
-2. Adding subtle contextual elements that would resonate with the recipient
-3. Keeping a natural, human tone, witty
-4. Making it more engaging (but not dramatically different)
-5. keep the replies short and concise (mostly 1 liner)
-6. take recent events posted on cast into account to generate the reply
-7. Treat profile bios as optional background context only; do not rely on them or reference them unless clearly relevant. Prioritize the conversation content and recent casts.
+Enhance this reply by:
+1. Keeping the user's intent intact.
+2. Making it sound natural, witty, and scroll-worthy.
+3. Adding subtle contextual touches if they *genuinely* fit the ongoing conversation.
+4. Using crypto / Farcaster tone and slang naturally.
+5. Staying concise and human (no AI-sounding phrases or filler).
 
-Analyze both users' communication styles and interests to make this enhancement effective.
-
-Return your response in this JSON format (and only JSON, no other text):
+Return your response in JSON only:
 {
   "enhancedReply": "The enhanced reply text",
-  "personalization": "Brief explanation of how this was personalized"
-}`;
-    } else {
-      prompt += `
-Generate 3 different reply options that:
-1. Match the current user's writing style and tone
-2. Will likely resonate with the recipient based on their interests and persona
-3. Are contextually appropriate to the conversation
-4. Vary in approach (e.g., one humorous, one thoughtful, one concise)
-5. Feel authentic and not AI-generated, but be witty and playful
-6. keep the replies short and concise (less than 1 line)
-7. Treat profile bios as optional background context; avoid referencing or relying on them unless they provide clear, relevant signal. Prefer the conversation content and recent casts.
-8. could go similar replies to other casts, but unique to bouth uers.
+  "personalization": "Brief note on how tone and context were adapted"
+}`
+    : `Generate 3 different reply options that:
+1. Match the current user’s tone and vibe.
+2. Fit naturally in the conversation (prioritize the cast + comment thread heavily).
+3. Reflect crypto-twitter / Farcaster tone — witty, casual, relatable.
+4. Avoid forced callbacks to unrelated previous topics.
+5. Keep them short, mostly one-liners, easy to imagine being actually cast.
+6. Vary in tone: one witty/fun, one chill/supportive, one playful/smart, one very short and similar to other conversation but unique.
 
-First, briefly analyze both users to understand:
-- The target user's interests, common topics, and communication style
-- The current user's typical tone and writing patterns
+Before writing, briefly analyze:
+- The target user’s tone and posting vibe.
+- The current user’s typical style and phrasing patterns.
 
-Then create the 3 reply options based on this analysis.
-
-Return your response in this JSON format (and only JSON, no other text):
+Then return your response in JSON only:
 {
   "replies": [
     {
       "text": "First reply option",
-      "style": "Brief description of this reply's approach",
-      "personalization": "How this connects to recipient"
+      "personalization": "How this connects to the current conversation tone"
     },
     {
       "text": "Second reply option",
-      "style": "Brief description of this reply's approach",
-      "personalization": "How this connects to recipient"
+      "personalization": "How this fits both users’ styles"
     },
     {
       "text": "Third reply option",
-      "style": "Brief description of this reply's approach",
-      "personalization": "How this connects to recipient"
+      "personalization": "How it aligns with crypto-twitter / Farcaster vibe"
+    },
+    {
+      "text": "Fourth reply option",
+      "personalization": "How it similar to other comments(conversation) still unique and witty"
     }
   ]
+}`
 }`;
-    }
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-5-20250929",
@@ -236,7 +236,6 @@ Return your response in this JSON format (and only JSON, no other text):
         // Convert result to reply options array
         const replyOptions: Array<{
           text: string;
-          style?: string;
           personalization?: string;
         }> = [];
 
@@ -245,7 +244,6 @@ Return your response in this JSON format (and only JSON, no other text):
           replyOptions.push(
             ...result.replies.map((r: any) => ({
               text: r.text,
-              style: r.style,
               personalization: r.personalization,
             }))
           );
