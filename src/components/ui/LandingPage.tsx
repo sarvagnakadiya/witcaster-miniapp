@@ -17,20 +17,26 @@ export function LandingPage() {
             <img
               src="/demo.GIF"
               alt="Witcaster demo"
-              className="w-48 h-48 mx-auto"
+              className="w-32 h-32 mx-auto"
             />
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Witcaster</h1>
-          <p className="text-lg text-gray-600 leading-relaxed">
-            Be more active on Farcaster and create cool replies. Witcaster helps
-            you craft engaging responses to casts with AI-powered suggestions
-            tailored to your style and the conversation context.
+          <p className="text-sm text-gray-600 leading-relaxed">
+            Bring your Farcaster replies to life with{" "}
+            <span className="font-medium text-gray-800">Witcaster</span> — your
+            AI sidekick for crafting smart, engaging responses that match your
+            tone and the conversation vibe.
             <br />
-            1. You need to add miniapp to create replies!
             <br />
-            2. On any cast click share &gt; witcaster &gt; create replies!
+            1. Add the Witcaster miniapp to start creating replies.
             <br />
-            3. Boom, replies created — you can enhance your custom replies as well.
+            2. On any cast, tap{" "}
+            <span className="font-medium">
+              Share → Witcaster → Create Replies
+            </span>
+            .<br />
+            3. Boom. Your replies are ready, and you can tweak or enhance them
+            however you like.
           </p>
         </div>
 
