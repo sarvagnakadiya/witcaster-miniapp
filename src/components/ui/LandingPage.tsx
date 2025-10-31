@@ -13,11 +13,12 @@ export function LandingPage() {
       <div className="max-w-lg w-full flex flex-col items-center gap-8">
         {/* Description Section */}
         <div className="text-center space-y-4">
+          <img src="/demo.GIF" alt="Witcaster demo" className="w-16 h-16" />
           <h1 className="text-3xl font-bold text-gray-900">Witcaster</h1>
           <p className="text-lg text-gray-600 leading-relaxed">
-            Be more active on Farcaster and create cool replies. Witcaster helps you 
-            craft engaging responses to casts with AI-powered suggestions tailored to 
-            your style and the conversation context.
+            Be more active on Farcaster and create cool replies. Witcaster helps
+            you craft engaging responses to casts with AI-powered suggestions
+            tailored to your style and the conversation context.
           </p>
         </div>
 
@@ -33,7 +34,7 @@ export function LandingPage() {
               Add MiniApp
             </Button>
           )}
-          
+
           <ShareButton
             buttonText="Share Witcaster"
             cast={{
