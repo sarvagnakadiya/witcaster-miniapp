@@ -12,7 +12,7 @@ export function LandingPage() {
     <div className="min-h-[100dvh] flex items-center justify-center px-6 py-12">
       <div className="max-w-lg w-full flex flex-col items-center gap-8">
         {/* Description Section */}
-        <div className="text-center space-y-4 flex flex-col items-center">
+        <div className="text-center space-y-6 flex flex-col items-center">
           <div className="flex justify-center">
             <img
               src="/demo.GIF"
@@ -20,24 +20,48 @@ export function LandingPage() {
               className="w-32 h-32 mx-auto"
             />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Witcaster</h1>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <h1 className="text-4xl font-bold text-gray-900">Witcaster</h1>
+
+          <p className="text-base text-gray-700 leading-relaxed max-w-md">
             Bring your Farcaster replies to life with{" "}
-            <span className="font-medium text-gray-800">Witcaster</span> — your
-            AI sidekick for crafting smart, engaging responses that match your
-            tone and the conversation vibe.
-            <br />
-            <br />
-            1. Add the Witcaster miniapp to start creating replies.
-            <br />
-            2. On any cast, tap{" "}
-            <span className="font-medium">
-              Share → Witcaster → Create Replies
+            <span className="font-semibold text-gray-900 text-lg text-purple-600">
+              Witcaster
             </span>
-            .<br />
-            3. Boom. Your replies are ready, and you can tweak or enhance them
-            however you like.
+            , your AI sidekick for crafting smart, engaging responses that match
+            your tone and the conversation vibe.
           </p>
+
+          <div className="text-left space-y-3 w-full max-w-md text-gray-700">
+            <div className="flex gap-3">
+              <span className="font-semibold text-purple-600 flex-shrink-0">
+                1.
+              </span>
+              <p className="text-sm leading-relaxed">
+                Add the Witcaster miniapp to start creating replies.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <span className="font-semibold text-purple-600 flex-shrink-0">
+                2.
+              </span>
+              <p className="text-sm leading-relaxed">
+                On any cast, tap{" "}
+                <span className="font-medium text-gray-900">
+                  Share → Witcaster → Create Replies
+                </span>
+                .
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <span className="font-semibold text-purple-600 flex-shrink-0">
+                3.
+              </span>
+              <p className="text-sm leading-relaxed">
+                Boom. Your replies are ready, and you can tweak or enhance them
+                however you like.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Action Buttons */}
